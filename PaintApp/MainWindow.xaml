@@ -1,12 +1,165 @@
 ﻿<Window x:Class="PaintApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PaintApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Paint Studio" Width="1280" Height="800" MinWidth="900" MinHeight="650"
+        WindowStartupLocation="CenterScreen" Background="#17181F"
+        FontFamily="Segoe UI">
 
+    <Window.Resources>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#7E8299"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="4,22,0,8"/>
+        </Style>
+
+        <Style x:Key="ToolButton" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#C9CCDA"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" Background="#2B2D3B" BorderBrush="#3A3D50"
+                                BorderThickness="1" CornerRadius="12" Height="72">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#353849"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#6C5CE7"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#9A8FF2"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="270"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#21222D" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="🎨 Paint Studio" Foreground="White" FontSize="22"
+                                   FontWeight="Bold" Margin="4,0,0,0"/>
+
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="ИНСТРУМЕНТЫ"/>
+                        <UniformGrid x:Name="ToolsPanel" Columns="2"/>
+
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="ЦВЕТ"/>
+                        <WrapPanel x:Name="SwatchPanel" Margin="0,0,0,10"/>
+
+                        <Border x:Name="ColorPreview" Height="30" CornerRadius="8" Margin="4,0"
+                                BorderBrush="#3A3D50" BorderThickness="1">
+                            <TextBlock x:Name="HexText" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold"/>
+                        </Border>
+
+                        <Grid Margin="4,10,4,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="18"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="R" Foreground="#FF6B6B" VerticalAlignment="Center"/>
+                            <Slider x:Name="RSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255"
+                                    Margin="0,4" ValueChanged="ColorSlider_ValueChanged"/>
+                            <TextBlock Grid.Row="1" Text="G" Foreground="#51CF66" VerticalAlignment="Center"/>
+                            <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255"
+                                    Margin="0,4" ValueChanged="ColorSlider_ValueChanged"/>
+                            <TextBlock Grid.Row="2" Text="B" Foreground="#4DABF7" VerticalAlignment="Center"/>
+                            <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255"
+                                    Margin="0,4" ValueChanged="ColorSlider_ValueChanged"/>
+                        </Grid>
+
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="ТОЛЩИНА"/>
+                        <Grid Margin="4,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="48"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider x:Name="ThicknessSlider" Minimum="1" Maximum="40" Value="3"
+                                    IsSnapToTickEnabled="True" TickFrequency="1"
+                                    VerticalAlignment="Center" ValueChanged="ThicknessSlider_ValueChanged"/>
+                            <TextBlock x:Name="ThicknessText" Grid.Column="1" Foreground="White"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Border Height="56" Margin="4,10,4,0" Background="#2B2D3B" CornerRadius="10">
+                            <Ellipse x:Name="ThicknessPreview" HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                    <Button Content="🗑  Очистить холст" Background="#3A3D50"
+                            Style="{StaticResource ActionButton}" Click="ClearButton_Click"/>
+                    <Button Content="💾  Сохранить изображение" Background="#6C5CE7"
+                            Style="{StaticResource ActionButton}" Click="SaveButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <Grid Width="960" Height="640" Margin="30" HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+                <Border Background="White" CornerRadius="4">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="30" ShadowDepth="6" Opacity="0.6" Color="Black"/>
+                    </Border.Effect>
+                </Border>
+                <Canvas x:Name="DrawCanvas" Background="White" ClipToBounds="True" Cursor="Cross"
+                        MouseLeftButtonDown="DrawCanvas_MouseLeftButtonDown"
+                        MouseMove="DrawCanvas_MouseMove"
+                        MouseLeftButtonUp="DrawCanvas_MouseLeftButtonUp"/>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>
